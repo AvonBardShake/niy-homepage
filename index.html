@@ -282,7 +282,7 @@
     <section>
       <h2 class="section-title"><span class="bolt">⚡</span>数字分身聊天区</h2>
       <div class="squiggle"></div>
-      <p class="chat-hint">基于本地知识库的关键词检索回复。想补充内容？在 index.html 里搜索「知识库」加一条即可。</p>
+      <p class="chat-hint">大模型加持的数字分身 ⚡ 先问大模型，答不上来就查本地知识库——关于牛爱杨的问题尽量有问必答。</p>
       <div class="chat-box">
         <div class="chat-head">
           <div class="mini-avatar">⚡</div>
@@ -315,10 +315,25 @@
   let busy = false;
 
   /* ================================================================
+     🤖 AI 大模型接入（路线 B：阿里云函数计算做代理，key 藏在服务端）
+     启用方法：把 AI_PROXY_URL 填成你的函数地址（创建步骤见 ai-proxy/index.js 顶部注释），
+     例如 'https://niy-ai-proxy-xxxxx.cn-hangzhou.fcapp.run'；AI_PROXY_KEY 要和函数
+     环境变量 PROXY_SHARED_SECRET 一致（部署时按下面的默认值填即可）。
+     URL 留空 = 纯本地知识库模式（现在的行为，一切照旧）。
+     代理超时 / 报错 / 没配置时，自动回退本地知识库，永远有话可说。
+     ================================================================ */
+  const AI_PROXY_URL = '';            // ← 函数计算 HTTP 触发器公网地址（留空 = 不启用 AI）
+  const AI_PROXY_KEY = 'niy-chat-2026'; // ← 与函数环境变量 PROXY_SHARED_SECRET 一致的口令
+  const AI_TIMEOUT_MS = 15000;        // 等 AI 回答最多 15 秒（含冷启动），超时自动回退本地
+  const AI_HISTORY_MAX = 10;          // 最多带最近 10 条对话给大模型（省钱）
+
+  let chatHistory = [];               // 对话历史：只发给大模型用，本地模式不依赖它
+
+  /* ================================================================
      ✏️ 数字分身知识库 —— 「自我检索补充内容」就从这里开始
      想补充一条新知识：复制一行 {keywords:[...], answer:'...'}, 加进去即可。
      关键词命中的字符数越多，优先级越高（越长越具体的关键词越优先）。
-     后续升级路线：把 findAnswer() 换成大模型 API 调用，其余界面不用动。
+     AI 大模型已接入：botRespond() 会先调大模型（见上方 AI_PROXY_URL），失败自动回退到这里。
      ================================================================ */
   const KNOWLEDGE_BASE = [
     {keywords:['你好','hi','hello','嗨','在吗','早上好','中午好','晚上好'], answer:'你好呀！我是牛爱杨的数字分身 ⚡ 你可以问我：你叫什么、你喜欢干什么、你的作品。'},
@@ -339,12 +354,12 @@
     {keywords:['雷霆','雷霆主义','诗人','浪漫主义','理工科'], answer:'雷霆主义是牛爱杨自创的一个主义，当代语境下的新词：说话很雷霆——也就是说话很雷人。语言、脑回路、行事风格都比较雷人，可能有些抽象。至于"浪漫主义"，就交给诗人这一半。'},
     {keywords:['谢谢','感谢','辛苦','多谢'], answer:'不客气！想让我多知道点什么，直接告诉牛爱杨本人，他会更新我的知识库。'},
     {keywords:['再见','拜拜','拜拜啦','走了','晚安','下次'], answer:'再见！欢迎随时回来问我 ⚡'},
-    {keywords:['数字分身','知识库','你会回答','能回答','怎么运作','工作原理','ai'], answer:'我是基于本地知识库的规则检索分身：把你问的话和知识库里的关键词做匹配，挑最相关的一条回答。牛爱杨说过，以后要给我接入大模型，实现真正的"自我检索补充内容"。'}
+    {keywords:['数字分身','知识库','你会回答','能回答','怎么运作','工作原理','ai'], answer:'我是牛爱杨的数字分身：回答问题时会先调大模型（key 藏在服务端，前端看不到），大模型没答上来就查本地知识库兜底。关于牛爱杨的问题，我尽量都有话可说。'}
   ];
 
   const FALLBACKS = [
     '这个问题我暂时答不上来，知识库还没覆盖到 😅 你可以试试问我：你叫什么 / 你喜欢干什么 / 你会干什么。',
-    '超出我的知识库范围了！牛爱杨说过要给我"自我检索补充内容"的能力——等以后接入大模型，我就能检索更多东西了。',
+    '超出我的知识库范围了！我的大模型外援这会儿也没联系上，换个问法试试？',
     '好问题！可惜目前的我只会回答知识库里有的内容。换一个问法试试？'
   ];
 
@@ -402,18 +417,68 @@
     return row;
   }
 
-  function botRespond(text){
+  // 调 AI 代理：成功返回 {reply}；服务器标记 terminal 的配置类错误返回 {error}（直接展示）；
+  // 其余失败（超时/断网/大模型抽风）返回 null → 回退本地知识库
+  async function askAI(text){
+    if(!AI_PROXY_URL) return null;
+    chatHistory.push({role:'user', content:text});
+    while(chatHistory.length > AI_HISTORY_MAX) chatHistory.shift();
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(), AI_TIMEOUT_MS);
+    try{
+      const resp = await fetch(AI_PROXY_URL, {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':AI_PROXY_KEY
+        },
+        body:JSON.stringify({messages:chatHistory}),
+        signal:controller.signal
+      });
+      const data = await resp.json().catch(()=>null);
+      if(resp.ok && data && typeof data.reply === 'string'){
+        chatHistory.push({role:'assistant', content:data.reply});
+        return {reply:data.reply};
+      }
+      chatHistory.pop();                                   // 这条没答上，从历史里拿掉
+      if(data && data.terminal === true && data.error){
+        return {error:data.error};                         // 配置类错误：直接展示（一般只有部署期会遇到）
+      }
+      console.warn('[分身] AI 代理不可用，回退本地知识库：', data && data.error ? data.error : resp.status);
+      return null;
+    }catch(err){
+      chatHistory.pop();                                   // 超时/断网/CORS 失败 → 交给本地知识库
+      console.warn('[分身] AI 代理请求失败，回退本地知识库：', err && err.message);
+      return null;
+    }finally{
+      clearTimeout(timer);
+    }
+  }
+
+  async function botRespond(text){
     busy = true;
     sendBtn.disabled = true;
     const typingRow = addTyping();
-    const {answer} = findAnswer(text);
+    const ai = await askAI(text);                    // 先试大模型
+    let answer, delay;
+    if(ai && ai.reply){
+      answer = ai.reply;                             // 大模型答上了
+      delay = 150;                                   // 等接口已经花了时间，这里少加点戏
+    }else if(ai && ai.error){
+      answer = ai.error;                             // 配置类报错，直接展示
+      delay = 150;
+    }else{
+      const local = findAnswer(text);                // 回退：本地知识库
+      answer = local.answer;
+      delay = 500 + Math.random()*500;
+    }
     setTimeout(()=>{
       typingRow.remove();
       addMsg('bot', answer);
       busy = false;
       sendBtn.disabled = false;
       input.focus();
-    }, 500 + Math.random()*500);
+    }, delay);
   }
 
   form.addEventListener('submit', e=>{
