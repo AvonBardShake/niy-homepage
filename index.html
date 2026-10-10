@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>牛爱杨的自述</title>
-<meta name="description" content="牛爱杨的个人主页：雷霆主义且浪漫主义的理工科诗人。">
+<meta name="description" content="牛爱杨的个人主页：一名正在求学的学生，爱下棋、爱游戏，也爱运动与阅读。">
 <style>
   :root{
     --blue:#3D7BFF;
@@ -50,17 +50,38 @@
   /* ---- Hero ---- */
   .hero{text-align:center;padding:56px 0 26px;position:relative;z-index:1}
   .avatar-wrap{
+    position:relative;cursor:pointer;
     width:140px;height:140px;margin:0 auto 18px;border-radius:36px;
     background:var(--paper);border:3px solid var(--ink);
     box-shadow:var(--shadow);padding:8px;transform:rotate(-3deg);
+    touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent;
   }
   .avatar-wrap svg{width:100%;height:100%;display:block}
+  .avatar-bolt{
+    position:absolute;top:-9px;right:-11px;width:36px;height:36px;border-radius:50%;
+    background:var(--orange);border:2.5px solid var(--ink);color:#fff;
+    font-size:17px;display:flex;align-items:center;justify-content:center;
+    box-shadow:2px 2px 0 rgba(31,41,55,.2);animation:floaty 5s ease-in-out infinite alternate;
+  }
+  @media (prefers-reduced-motion:reduce){.avatar-bolt{animation:none}}
+  .avatar-bubble{
+    position:absolute;left:50%;top:-58px;transform:translateX(-50%);z-index:5;
+    background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;
+    padding:7px 14px;font-size:13px;font-weight:700;white-space:nowrap;max-width:90vw;
+    box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s;
+    font-family:"STKaiti","KaiTi","楷体","STSong",serif;
+  }
+  .avatar-bubble.show{opacity:1}
   h1{font-size:clamp(34px,7vw,48px);font-weight:900;letter-spacing:2px}
   .tagline{
     display:inline-block;margin-top:12px;padding:8px 18px;
     background:var(--orange-light);border:2.5px solid var(--ink);
     border-radius:999px;font-weight:700;font-size:15px;
     box-shadow:3px 3px 0 rgba(31,41,55,.12);transform:rotate(1deg);
+  }
+  .hero-quote{
+    margin-top:14px;font-family:"STKaiti","KaiTi","楷体","STSong",serif;
+    font-size:18px;font-weight:700;color:#374151;letter-spacing:1px;
   }
 
   /* ---- 区块标题 ---- */
@@ -91,12 +112,39 @@
     padding:14px 18px;font-size:14px;font-weight:600;transform:rotate(-.4deg);
   }
 
-  /* ---- 作品卡片 ---- */
-  .poem-card{padding:20px 20px 18px}
-  .poem-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+  /* ---- 自留之册：折叠诗卡（悬念入口） ---- */
   .poem-title{font-family:"STKaiti","KaiTi","楷体","STSong",serif;font-weight:700;font-size:18px;color:var(--blue-dark)}
   .poem-kind{font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;border:2px solid var(--ink);background:var(--orange-light);flex-shrink:0}
   .poem{font-family:"STKaiti","KaiTi","楷体","STSong",serif;font-size:16px;line-height:2;white-space:pre-wrap;color:#374151;border-top:2px dashed rgba(31,41,55,.25);padding-top:12px}
+  .folio-role{
+    display:inline-block;margin:2px 0 6px;padding:7px 16px;
+    background:var(--orange-light);border:2.5px solid var(--ink);
+    border-radius:999px;font-weight:700;font-size:14px;
+    font-family:"STKaiti","KaiTi","楷体","STSong",serif;
+    box-shadow:3px 3px 0 rgba(31,41,55,.12);transform:rotate(-.8deg);
+  }
+  .folio-sub{font-size:13px;color:#6B7280;margin:0 0 14px}
+  .poem-details summary{
+    list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;
+    margin:-18px -18px 0;padding:18px 18px 16px;
+    touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent;
+  }
+  .poem-details summary::-webkit-details-marker{display:none}
+  .poem-details .poem-title{font-size:17px}
+  .poem-details .more{
+    margin-left:auto;font-size:12px;font-weight:700;color:#6B7280;
+    display:flex;align-items:center;gap:4px;flex-shrink:0;
+  }
+  .poem-details .arrow{display:inline-block;font-size:11px;transition:transform .25s}
+  .poem-details[open] .arrow{transform:rotate(180deg)}
+  @media (prefers-reduced-motion:reduce){.poem-details .arrow{transition:none}}
+  .poem-details .poem{margin-top:2px}
+  .folio-note{
+    margin-top:12px;padding:9px 12px;font-size:13px;font-weight:700;color:var(--blue-dark);
+    background:var(--orange-light);border:2px dashed var(--ink);border-radius:12px;
+    font-family:"STKaiti","KaiTi","楷体","STSong",serif;
+  }
+  .card.wide{grid-column:1/-1}
 
   /* ---- 数字分身聊天区 ---- */
   .chat-hint{font-size:13px;color:#6B7280;margin:-8px 0 14px}
@@ -180,7 +228,7 @@
       </svg>
     </div>
 
-    <div class="avatar-wrap" title="牛爱杨的抽象卡通头像">
+    <div class="avatar-wrap" id="avatar" title="点一下有惊喜" role="button" aria-label="头像：点一下有惊喜">
       <!-- 想换真实头像：把图片放到 index.html 旁边（如 avatar.png），然后删除下面这行 SVG、
            放开下面这行 <img> 的注释即可，圆角和大小样式已配好 -->
       <!-- <img src="avatar.png" alt="牛爱杨的头像" style="width:100%;height:100%;object-fit:cover;border-radius:26px;display:block"> -->
@@ -196,10 +244,12 @@
         <circle cx="44" cy="63" r="3.5" fill="#FF8C42" opacity=".85"/>
         <circle cx="76" cy="63" r="3.5" fill="#FF8C42" opacity=".85"/>
       </svg>
+      <span class="avatar-bolt" aria-hidden="true">⚡</span>
     </div>
 
     <h1>牛爱杨</h1>
-    <p class="tagline">⚡ 雷霆主义且浪漫主义的理工科诗人？</p>
+    <p class="hero-quote">「跨过开端，将会扶摇而上，直济沧海。」</p>
+    <p class="tagline">一个正在求学的学生。爱下棋，爱游戏，也爱运动与阅读。</p>
   </header>
 
   <main>
@@ -231,37 +281,49 @@
             <span class="tag">🚴 骑行</span>
             <span class="tag">🏸 羽毛球</span>
             <span class="tag">🏓 乒乓球</span>
-            <span class="tag">♟️ 国际象棋</span>
-            <span class="tag">♟️ 中国象棋</span>
-            <span class="tag">⚪ 围棋</span>
             <span class="tag">📚 阅读</span>
             <span class="tag">🖋 莎士比亚</span>
             <span class="tag">📜 古诗词</span>
+          </div>
+        </div>
+        <div class="card wide">
+          <span class="icon">♟️</span>
+          <h3>对弈</h3>
+          <p>爱玩游戏。下棋最享受与人对弈，慢慢推敲这一步该怎么下；有时也和人机对弈。</p>
+          <div class="tag-list">
+            <span class="tag">♟️ 国际象棋</span>
+            <span class="tag">♟️ 中国象棋</span>
+            <span class="tag">⚪ 围棋</span>
+            <span class="tag">🎮 游戏</span>
           </div>
         </div>
       </div>
       <div class="banner">🤔 一个比较有记忆点的特点：<b>旷课吗？</b>——旷的。旷课的时间里，我把身体融入我的床，或者融入外面广阔的世界。（开玩笑的，别学）</div>
     </section>
 
-    <!-- 我的作品 -->
+    <!-- 自留之册：诗作藏进折叠里，入口含蓄，等有心人点开 -->
     <section>
-      <h2 class="section-title"><span class="bolt">⚡</span>我的作品</h2>
+      <h2 class="section-title"><span class="bolt">⚡</span>自留之册</h2>
       <div class="squiggle"></div>
+      <p class="folio-role">牛爱杨 · 雷霆主义且浪漫主义的理工科诗人</p>
+      <p class="folio-sub">闲时所记，随手涂写</p>
       <p class="chat-hint" style="margin:0 0 14px">莎士比亚忠实迷弟的创作——诗的灵感，很多来源于莎翁；古诗词，是自己慢慢琢磨出来的。</p>
       <div class="cards">
-        <div class="card poem-card">
-          <div class="poem-head">
+        <details class="card poem-details">
+          <summary>
             <span class="poem-title">《蝶恋花·劝学》</span>
             <span class="poem-kind">古诗词</span>
-          </div>
+            <span class="more">点开读全文<span class="arrow">▾</span></span>
+          </summary>
           <div class="poem">书音万点朝至暮。缥缈万里，难渡千层雾。学如逆水行舟溯，心系磐石坚且固。
 春去秋来凋万树。草木零落，唯美人不诉。天地虚无日月古，人生苍茫寄何处？</div>
-        </div>
-        <div class="card poem-card">
-          <div class="poem-head">
+        </details>
+        <details class="card poem-details">
+          <summary>
             <span class="poem-title">《自视歌》</span>
             <span class="poem-kind">现代诗</span>
-          </div>
+            <span class="more">点开读全文<span class="arrow">▾</span></span>
+          </summary>
           <div class="poem">不满足于现在，渴望辉煌难耐。
 又怕面对失败，退缩于前进缓慢。
 该是大脑幻想宇宙，心里战胜地球，
@@ -274,7 +336,8 @@
 我们付之一笑，安心忍耐，
 担心焦虑只会让你失败。
 跨过开端，将会扶摇而上，直济沧海</div>
-        </div>
+          <div class="folio-note">谜底：首页开篇那句引语，就出自这首诗的最后一句。</div>
+        </details>
       </div>
     </section>
 
@@ -322,7 +385,7 @@
      URL 留空 = 纯本地知识库模式（现在的行为，一切照旧）。
      代理超时 / 报错 / 没配置时，自动回退本地知识库，永远有话可说。
      ================================================================ */
-  const AI_PROXY_URL = '';            // ← 函数计算 HTTP 触发器公网地址（留空 = 不启用 AI）
+  const AI_PROXY_URL = 'https://niy-chat-zkvzblaofa.cn-hangzhou.fcapp.run'; // ← 函数计算 HTTP 触发器公网地址（留空 = 不启用 AI）
   const AI_PROXY_KEY = 'niy-chat-2026'; // ← 与函数环境变量 PROXY_SHARED_SECRET 一致的口令
   const AI_TIMEOUT_MS = 15000;        // 等 AI 回答最多 15 秒（含冷启动），超时自动回退本地
   const AI_HISTORY_MAX = 10;          // 最多带最近 10 条对话给大模型（省钱）
@@ -342,12 +405,13 @@
     {keywords:['喜欢干什么','喜欢做什么','喜欢什么','爱好','兴趣','平时干什么','平时干嘛','平时做什么','业余'], answer:'喜欢的事情挺多：长跑和骑行，羽毛球和乒乓球；下棋——国际象棋和中国象棋都下；阅读（最近在读莎士比亚）；写诗和古诗词；还有打围棋（go）。'},
     {keywords:['跑步','长跑','骑行','骑车','运动','锻炼','体育'], answer:'运动我挺喜欢的，尤其爱长跑：跑过半程马拉松，2小时07分完赛，还拿了奖牌 🏅。骑行是日常，羽毛球和乒乓球也会打。'},
     {keywords:['马拉松','半马','奖牌','完赛'], answer:'我跑过半程马拉松，2小时07分完赛，拿到一枚奖牌——算是我个人的一个小标签 🏅'},
-    {keywords:['围棋','下棋','棋','象棋','国际象棋','go'], answer:'下棋我喜欢：国际象棋和中国象棋都下，围棋（go）也打。'},
+    {keywords:['围棋','下棋','棋','象棋','国际象棋','go','对弈','人机','游戏'], answer:'下棋是我的心头好：国际象棋和中国象棋都下，围棋（go）也打。最享受与人对弈，慢慢推敲这一步该怎么下；有时候也和人机对弈。游戏也爱玩。'},
     {keywords:['阅读','看书','读书','读什么','文学作品'], answer:'我最近在读莎士比亚——我是莎翁的忠实迷弟，很多诗的灵感都来源于他。我也喜欢看优美的文学作品，热爱古诗词，自己也会写。'},
     {keywords:['莎士比亚','莎翁','莎剧','哈姆雷特'], answer:'莎士比亚是我最近的精神食粮——我是莎翁的忠实迷弟，我的很多诗的灵感都来源于他的作品。'},
-    {keywords:['古诗词','诗词','诗','写诗','创作','作品','蝶恋花','自视歌'], answer:'我热爱古诗词，自己也创作。主页上有两首我的作品：《蝶恋花·劝学》和《自视歌》，欢迎去看看。'},
+    {keywords:['古诗词','诗词','诗','写诗','创作','作品','蝶恋花','自视歌','自留之册'], answer:'我热爱古诗词，自己也创作。主页的「自留之册」里有两首我的作品：《蝶恋花·劝学》和《自视歌》，点开就能读到。'},
+    {keywords:['主页第一句话','开篇','引语','谁写的','出自哪里','扶摇','沧海','第一句','那句话'], answer:'主页开篇那句「跨过开端，将会扶摇而上，直济沧海」，出自《自视歌》的最后一句——就在「自留之册」里，点开《自视歌》就能读到全文。'},
     {keywords:['交流','聊天','交朋友','朋友'], answer:'我很喜欢与人交流——热情丰富，也算健谈。想聊什么，问我就行。'},
-    {keywords:['你会干什么','你会什么','你能干什么','你能干嘛','你会干嘛','擅长','会做什么','技能','能力'], answer:'我关心内容表达和写作——会写诗和古诗词，主页上有我的作品。运动也算一个：半马 2小时07分完赛。最近在做的事：阅读、搭个人主页、整理作品集。'},
+    {keywords:['你会干什么','你会什么','你能干什么','你能干嘛','你会干嘛','擅长','会做什么','技能','能力'], answer:'我关心内容表达和写作——会写诗和古诗词，主页的「自留之册」里有我的作品。运动也算一个：半马 2小时07分完赛。最近在做的事：阅读、搭个人主页、整理作品集。'},
     {keywords:['最近','在干什么','在干嘛','在忙什么','近况','忙什么','干什么呢','干嘛呢'], answer:'最近在阅读，在搭自己的个人主页（就是你现在看到的这个），还在整理作品集。'},
     {keywords:['软件工程','项目','退课','退选','劝退','课程','作业'], answer:'我在做一个软件工程的项目。进度不算顺利——老师已经劝我退课了，但我还没退。这件事本身就挺雷人的，很符合我的雷霆主义。'},
     {keywords:['旷课','逃课','翘课','不上课','缺勤'], answer:'我比较有记忆点的特点……旷课吗？旷的。旷课的时间里，我把身体融入我的床，或者融入外面广阔的世界。开玩笑的，别学我。'},
@@ -497,6 +561,27 @@
       botRespond(chip.dataset.q);
     });
   });
+
+  /* 头像彩蛋：点一下弹出诗句（连点轮换）。桌面端加分项，手机 tap 同样触发 */
+  (function(){
+    const avatarEl = document.getElementById('avatar');
+    if(!avatarEl) return;
+    const bubble = document.createElement('div');
+    bubble.className = 'avatar-bubble';
+    avatarEl.appendChild(bubble);
+    const lines = [
+      '「学如逆水行舟溯，心系磐石坚且固。」——《蝶恋花·劝学》',
+      '「我们付之一笑，安心忍耐。」——《自视歌》'
+    ];
+    let idx = 0, hideTimer = null;
+    avatarEl.addEventListener('click', ()=>{
+      bubble.textContent = lines[idx % lines.length];
+      idx += 1;
+      bubble.classList.add('show');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(()=>bubble.classList.remove('show'), 3200);
+    });
+  })();
 
   setTimeout(()=>{
     addMsg('bot', '你好！我是牛爱杨的数字分身 ⚡ 关于他的问题，都可以问我。点下面的快捷提问，或者直接输入试试。');
