@@ -91,6 +91,13 @@
     padding:14px 18px;font-size:14px;font-weight:600;transform:rotate(-.4deg);
   }
 
+  /* ---- 作品卡片 ---- */
+  .poem-card{padding:20px 20px 18px}
+  .poem-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+  .poem-title{font-family:"STKaiti","KaiTi","楷体","STSong",serif;font-weight:700;font-size:18px;color:var(--blue-dark)}
+  .poem-kind{font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;border:2px solid var(--ink);background:var(--orange-light);flex-shrink:0}
+  .poem{font-family:"STKaiti","KaiTi","楷体","STSong",serif;font-size:16px;line-height:2;white-space:pre-wrap;color:#374151;border-top:2px dashed rgba(31,41,55,.25);padding-top:12px}
+
   /* ---- 数字分身聊天区 ---- */
   .chat-hint{font-size:13px;color:#6B7280;margin:-8px 0 14px}
   .chat-box{background:var(--paper);border:3px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
@@ -204,17 +211,17 @@
         <div class="card">
           <span class="icon">🎓</span>
           <h3>身份</h3>
-          <p>学生。目前在做一个软件工程项目——老师已经劝我退课了，但我还没退。</p>
+          <p>学生。一个比较抽象、富有逻辑思维、又满怀热情的人，很喜欢与人交流。</p>
         </div>
         <div class="card">
           <span class="icon">🛠️</span>
           <h3>最近在做</h3>
-          <p>阅读 · 搭自己的个人主页 · 整理作品集</p>
+          <p>做软件工程项目（被老师劝退中，还没退）· 阅读 · 搭个人主页 · 整理作品集</p>
         </div>
         <div class="card">
           <span class="icon">✨</span>
           <h3>擅长与关心</h3>
-          <p>内容表达 · 运动 · 写作</p>
+          <p>内容表达 · 运动（半马 2:07 完赛 🏅）· 写作（诗与古诗词）</p>
         </div>
         <div class="card">
           <span class="icon">🎯</span>
@@ -228,10 +235,47 @@
             <span class="tag">♟️ 中国象棋</span>
             <span class="tag">⚪ 围棋</span>
             <span class="tag">📚 阅读</span>
+            <span class="tag">🖋 莎士比亚</span>
+            <span class="tag">📜 古诗词</span>
           </div>
         </div>
       </div>
-      <div class="banner">🤔 一个比较有记忆点的特点：<b>旷课吗？</b>——可能吧。不过旷课的时间里，我一般在操场跑步，或者在图书馆看书。</div>
+      <div class="banner">🤔 一个比较有记忆点的特点：<b>旷课吗？</b>——旷的。旷课的时间里，我把身体融入我的床，或者融入外面广阔的世界。（开玩笑的，别学）</div>
+    </section>
+
+    <!-- 我的作品 -->
+    <section>
+      <h2 class="section-title"><span class="bolt">⚡</span>我的作品</h2>
+      <div class="squiggle"></div>
+      <p class="chat-hint" style="margin:0 0 14px">莎士比亚忠实迷弟的创作——诗的灵感，很多来源于莎翁；古诗词，是自己慢慢琢磨出来的。</p>
+      <div class="cards">
+        <div class="card poem-card">
+          <div class="poem-head">
+            <span class="poem-title">《蝶恋花·劝学》</span>
+            <span class="poem-kind">古诗词</span>
+          </div>
+          <div class="poem">书音万点朝至暮。缥缈万里，难渡千层雾。学如逆水行舟溯，心系磐石坚且固。
+春去秋来凋万树。草木零落，唯美人不诉。天地虚无日月古，人生苍茫寄何处？</div>
+        </div>
+        <div class="card poem-card">
+          <div class="poem-head">
+            <span class="poem-title">《自视歌》</span>
+            <span class="poem-kind">现代诗</span>
+          </div>
+          <div class="poem">不满足于现在，渴望辉煌难耐。
+又怕面对失败，退缩于前进缓慢。
+该是大脑幻想宇宙，心里战胜地球，
+却不知步履蹒跚，爬行艰难，
+不应用现实痛击幻梦，让你挣扎厄命之中。
+现实当浇铸浪漫，使它有所期待。
+怀梦的人儿不用惧骇，
+前进的迷茫缓慢，
+只因开端是成功的一半。
+我们付之一笑，安心忍耐，
+担心焦虑只会让你失败。
+跨过开端，将会扶摇而上，直济沧海</div>
+        </div>
+      </div>
     </section>
 
     <!-- 数字分身聊天区 -->
@@ -251,6 +295,7 @@
           <button class="q-chip" data-q="你喜欢干什么">你喜欢干什么</button>
           <button class="q-chip" data-q="你会干什么">你会干什么</button>
           <button class="q-chip" data-q="你最近在干嘛">你最近在干嘛</button>
+          <button class="q-chip" data-q="你的作品">你的作品</button>
         </div>
         <form class="input-row" id="chat-form">
           <input id="chat-input" type="text" placeholder="问点什么吧，比如：你会干什么" autocomplete="off" aria-label="向数字分身提问">
@@ -276,17 +321,21 @@
      后续升级路线：把 findAnswer() 换成大模型 API 调用，其余界面不用动。
      ================================================================ */
   const KNOWLEDGE_BASE = [
-    {keywords:['你好','hi','hello','嗨','在吗','早上好','中午好','晚上好'], answer:'你好呀！我是牛爱杨的数字分身 ⚡ 你可以问我：你叫什么、你喜欢干什么、你会干什么。'},
+    {keywords:['你好','hi','hello','嗨','在吗','早上好','中午好','晚上好'], answer:'你好呀！我是牛爱杨的数字分身 ⚡ 你可以问我：你叫什么、你喜欢干什么、你的作品。'},
     {keywords:['你叫什么','叫什么名字','你的名字','名字'], answer:'我叫牛爱杨。牛是姓，爱杨是名。也有个自封的称号——"雷霆主义且浪漫主义的理工科诗人"。'},
-    {keywords:['你是谁','你是','介绍你自己','介绍一下你','自我介绍','介绍一下'], answer:'我是牛爱杨的数字分身。本尊是：一名学生，一个自称的理工科诗人，喜欢运动和阅读。最近他在搭这个个人主页，顺便整理作品集。'},
-    {keywords:['喜欢干什么','喜欢做什么','喜欢什么','爱好','兴趣','平时干什么','平时干嘛','平时做什么','业余'], answer:'喜欢的事情挺多：长跑和骑行，羽毛球和乒乓球；下棋——国际象棋和中国象棋都下；还有阅读和打围棋（go）。'},
-    {keywords:['跑步','长跑','骑行','骑车','运动','锻炼','体育'], answer:'运动我挺喜欢的：长跑和骑行是日常，羽毛球和乒乓球也会打。'},
+    {keywords:['你是谁','你是','介绍你自己','介绍一下你','自我介绍','介绍一下'], answer:'我是牛爱杨的数字分身。本尊是：一名学生，一个自称的理工科诗人——比较抽象，但富有逻辑思维，热情又丰富，喜欢与人交流。喜欢运动、下棋和阅读，最近在读莎士比亚，还在搭这个个人主页、整理作品集。'},
+    {keywords:['喜欢干什么','喜欢做什么','喜欢什么','爱好','兴趣','平时干什么','平时干嘛','平时做什么','业余'], answer:'喜欢的事情挺多：长跑和骑行，羽毛球和乒乓球；下棋——国际象棋和中国象棋都下；阅读（最近在读莎士比亚）；写诗和古诗词；还有打围棋（go）。'},
+    {keywords:['跑步','长跑','骑行','骑车','运动','锻炼','体育'], answer:'运动我挺喜欢的，尤其爱长跑：跑过半程马拉松，2小时07分完赛，还拿了奖牌 🏅。骑行是日常，羽毛球和乒乓球也会打。'},
+    {keywords:['马拉松','半马','奖牌','完赛'], answer:'我跑过半程马拉松，2小时07分完赛，拿到一枚奖牌——算是我个人的一个小标签 🏅'},
     {keywords:['围棋','下棋','棋','象棋','国际象棋','go'], answer:'下棋我喜欢：国际象棋和中国象棋都下，围棋（go）也打。'},
-    {keywords:['阅读','看书','读书','读什么'], answer:'我最近在阅读。具体在读什么书，知识库还没同步到那么细——可以当面问牛爱杨本人。'},
-    {keywords:['你会干什么','你会什么','你能干什么','你能干嘛','你会干嘛','擅长','会做什么','技能','能力'], answer:'我关心内容表达和写作，运动也算一个。最近在做的事：阅读、搭个人主页、整理作品集。'},
+    {keywords:['阅读','看书','读书','读什么','文学作品'], answer:'我最近在读莎士比亚——我是莎翁的忠实迷弟，很多诗的灵感都来源于他。我也喜欢看优美的文学作品，热爱古诗词，自己也会写。'},
+    {keywords:['莎士比亚','莎翁','莎剧','哈姆雷特'], answer:'莎士比亚是我最近的精神食粮——我是莎翁的忠实迷弟，我的很多诗的灵感都来源于他的作品。'},
+    {keywords:['古诗词','诗词','诗','写诗','创作','作品','蝶恋花','自视歌'], answer:'我热爱古诗词，自己也创作。主页上有两首我的作品：《蝶恋花·劝学》和《自视歌》，欢迎去看看。'},
+    {keywords:['交流','聊天','交朋友','朋友'], answer:'我很喜欢与人交流——热情丰富，也算健谈。想聊什么，问我就行。'},
+    {keywords:['你会干什么','你会什么','你能干什么','你能干嘛','你会干嘛','擅长','会做什么','技能','能力'], answer:'我关心内容表达和写作——会写诗和古诗词，主页上有我的作品。运动也算一个：半马 2小时07分完赛。最近在做的事：阅读、搭个人主页、整理作品集。'},
     {keywords:['最近','在干什么','在干嘛','在忙什么','近况','忙什么','干什么呢','干嘛呢'], answer:'最近在阅读，在搭自己的个人主页（就是你现在看到的这个），还在整理作品集。'},
     {keywords:['软件工程','项目','退课','退选','劝退','课程','作业'], answer:'我在做一个软件工程的项目。进度不算顺利——老师已经劝我退课了，但我还没退。这件事本身就挺雷人的，很符合我的雷霆主义。'},
-    {keywords:['旷课','逃课','翘课','不上课','缺勤'], answer:'我比较有记忆点的特点……旷课吗？可能吧。不过旷课的时间里，我一般在操场跑步，或者在图书馆看书。也算另一种形式的"上课"。'},
+    {keywords:['旷课','逃课','翘课','不上课','缺勤'], answer:'我比较有记忆点的特点……旷课吗？旷的。旷课的时间里，我把身体融入我的床，或者融入外面广阔的世界。开玩笑的，别学我。'},
     {keywords:['雷霆','雷霆主义','诗人','浪漫主义','理工科'], answer:'雷霆主义是牛爱杨自创的一个主义，当代语境下的新词：说话很雷霆——也就是说话很雷人。语言、脑回路、行事风格都比较雷人，可能有些抽象。至于"浪漫主义"，就交给诗人这一半。'},
     {keywords:['谢谢','感谢','辛苦','多谢'], answer:'不客气！想让我多知道点什么，直接告诉牛爱杨本人，他会更新我的知识库。'},
     {keywords:['再见','拜拜','拜拜啦','走了','晚安','下次'], answer:'再见！欢迎随时回来问我 ⚡'},
